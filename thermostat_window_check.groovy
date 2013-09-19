@@ -24,12 +24,14 @@ preferences {
 
 def installed() {
   subscribe(thermostats, "thermostatMode", thermoChange);
+  subscribe(sensors, "contact.open", windowChange);
 }
 
 def updated() {
   unsubscribe()
   log.debug("Updated with settings: ${settings}")
   subscribe(thermostats, "thermostatMode", thermoChange);
+  subscribe(sensors, "contact.open", windowChange);
 }
 
 def thermoChange(evt) {
@@ -38,12 +40,24 @@ def thermoChange(evt) {
     def open = sensors.findAll { it?.latestValue("contact") == "open" }
 
     if (open) {
-      send("Thermostat came on with the following things still open: ${open.join(', ')}")
+      send("${open.join(', ')} are still open and the thermostat just came on.")
     }
 
     else {
       log.info("Thermostat came on and nothing is open.");
     }
+  }
+}
+
+def windowChange(evt) {
+  def heating = thermostats.findAll { it?.latestValue("thermostatMode") == "heat" }
+  def cooling = thermostats.findAll { it?.latestValue("thermostatMode") == "cool" }
+
+  if (heating || cooling) {
+    def open = sensors.findAll { it?.latestValue("contact") == "open" }
+    def tempDirection = heating ? "heating" : "cooling"
+    def plural = open.size() > 1 ? "were" : "was"
+    send("${open.join(', ')} ${plural} opened and the thermostat is still ${tempDirection}.")
   }
 }
 
