@@ -4,7 +4,9 @@
  *  Author: brian@bevey.org
  *  Date: 9/13/13
  *
- *  If your heating or cooling system come on, it gives you notice if there are any windows or doors left open, preventing the system from working optimally.
+ *  If your heating or cooling system come on, it gives you notice if there are
+ *  any windows or doors left open, preventing the system from working
+ *  optimally.
  */
 
 preferences {
@@ -40,7 +42,8 @@ def thermoChange(evt) {
     def open = sensors.findAll { it?.latestValue("contact") == "open" }
 
     if (open) {
-      send("${open.join(', ')} are still open and the thermostat just came on.")
+      def plural = open.size() > 1 ? "are" : "is"
+      send("${open.join(', ')} ${plural} still open and the thermostat just came on.")
     }
 
     else {
