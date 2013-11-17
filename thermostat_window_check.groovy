@@ -37,11 +37,11 @@ def updated() {
 }
 
 def thermoChange(evt) {
-  if (evt.value == "heat" ||
-      evt.value == "cool") {
+  if(evt.value == "heat" ||
+     evt.value == "cool") {
     def open = sensors.findAll { it?.latestValue("contact") == "open" }
 
-    if (open) {
+    if(open) {
       def plural = open.size() > 1 ? "are" : "is"
       send("${open.join(', ')} ${plural} still open and the thermostat just came on.")
     }
@@ -56,7 +56,7 @@ def windowChange(evt) {
   def heating = thermostats.findAll { it?.latestValue("thermostatMode") == "heat" }
   def cooling = thermostats.findAll { it?.latestValue("thermostatMode") == "cool" }
 
-  if (heating || cooling) {
+  if(heating || cooling) {
     def open = sensors.findAll { it?.latestValue("contact") == "open" }
     def tempDirection = heating ? "heating" : "cooling"
     def plural = open.size() > 1 ? "were" : "was"
@@ -65,12 +65,12 @@ def windowChange(evt) {
 }
 
 private send(msg) {
-  if (sendPushMessage != "No") {
+  if(sendPushMessage != "No") {
     log.debug("Sending push message")
     sendPush(msg)
   }
 
-  if (phone) {
+  if(phone) {
     log.debug("Sending text message")
     sendSms(phone, msg)
   }
