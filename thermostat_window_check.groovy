@@ -49,10 +49,10 @@ def thermoChange(evt) {
     def open = sensors.findAll { it?.latestValue("contact") == "open" }
 
     if(open) {
-      thermoShutOffTrigger()
-
       def plural = open.size() > 1 ? "are" : "is"
       send("${open.join(', ')} ${plural} still open and the thermostat just came on.")
+
+      thermoShutOffTrigger()
     }
 
     else {
@@ -66,12 +66,12 @@ def windowChange(evt) {
   def cooling = thermostats.findAll { it?.latestValue("thermostatMode") == "cool" }
 
   if(heating || cooling) {
-    thermoShutOffTrigger()
-
     def open = sensors.findAll { it?.latestValue("contact") == "open" }
     def tempDirection = heating ? "heating" : "cooling"
     def plural = open.size() > 1 ? "were" : "was"
     send("${open.join(', ')} ${plural} opened and the thermostat is still ${tempDirection}.")
+
+    thermoShutOffTrigger()
   }
 }
 
@@ -96,6 +96,10 @@ def thermoShutOff() {
     send("Thermostats turned off: ${open.join(', ')} ${plural} open and thermostats ${tempDirection}.")
     log.info("Windows still open, turning thermostats off")
     thermostats?.off()
+  }
+
+  else {
+    log.info("Looks like everything is shut now - no need to turn off thermostats")
   }
 }
 
