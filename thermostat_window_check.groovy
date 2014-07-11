@@ -9,6 +9,16 @@
  *  optimally.
  */
 
+definition(
+  name: "Thermostat Window Check",
+  namespace: "imbrianj",
+  author: "brian@bevey.org",
+  description: "If your heating or cooling system come on, it gives you notice if there are any windows or doors left open, preventing the system from working optimally.",
+  category: "Green Living",
+  iconUrl: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png",
+  iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience%402x.png"
+)
+
 preferences {
   section("Things to check?") {
     input "sensors", "capability.contactSensor", multiple: true
@@ -78,7 +88,7 @@ def windowChange(evt) {
 def thermoShutOffTrigger() {
   if(turnOffTherm == "Yes") {
     log.info("Starting timer to turn off thermostat")
-    def delay = (turnOffDelay != null && turnOffDelay != "") ? turnOffDelay * 60 : 60 
+    def delay = (turnOffDelay != null && turnOffDelay != "") ? turnOffDelay * 60 : 60
     state.turnOffTime = now()
 
     runIn(delay, "thermoShutOff")
