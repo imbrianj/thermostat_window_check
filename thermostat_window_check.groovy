@@ -2,7 +2,7 @@
  *  Thermostat Window Check
  *
  *  Author: brian@bevey.org
- *  Date: 9/13/13
+ *  Date: 7/31/14
  *
  *  If your heating or cooling system come on, it gives you notice if there are
  *  any windows or doors left open, preventing the system from working
@@ -80,9 +80,9 @@ def windowChange(evt) {
     def tempDirection = heating ? "heating" : "cooling"
     def plural = open.size() > 1 ? "were" : "was"
     send("${open.join(', ')} ${plural} opened and the thermostat is still ${tempDirection}.")
-
-    thermoShutOffTrigger()
   }
+
+  thermoShutOffTrigger()
 }
 
 def thermoShutOffTrigger() {
@@ -103,8 +103,14 @@ def thermoShutOff() {
   log.info("Checking if we need to turn thermostats off")
 
   if(open.size()) {
-    send("Thermostats turned off: ${open.join(', ')} ${plural} open and thermostats ${tempDirection}.")
-    log.info("Windows still open, turning thermostats off")
+    def heating = thermostats.findAll { it?.latestValue("thermostatMode") == "heat" }
+    def cooling = thermostats.findAll { it?.latestValue("thermostatMode") == "cool" }
+
+    if((heating) || (cooling)) {
+      send("Thermostats turned off: ${open.join(', ')} ${plural} open and thermostats ${tempDirection}.")
+      log.info("Windows still open, turning thermostats off")
+    }
+
     thermostats?.off()
   }
 
